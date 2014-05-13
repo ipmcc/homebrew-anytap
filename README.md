@@ -45,7 +45,7 @@ command. I thank all the people who worked on that.
     + `brew any-tap`: List currently installed taps
     + `brew any-tap -h|-?|--help`: Get usage
     + `brew any-tap -r|--repair`: Check all symlinks and remove orphans
-    + `brew any-tap name URL`: Tap the repo at URL as 'name'
+    + `brew any-tap user name URL`: Tap the repo at URL as 'name'
 + `brew any-untap`
     + `brew any-untap -h|-?|--help`: Get usage
     + `brew any-untap`: List currently installed taps
@@ -61,7 +61,7 @@ command. I thank all the people who worked on that.
   have on disc. `brew any-tap` will simply hand over these arguments and
   try to run this command:
 
-        git clone URL name
+        git clone URL user/name
 
 ## Contributors
 

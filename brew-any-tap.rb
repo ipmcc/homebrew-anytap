@@ -16,7 +16,7 @@ USAGE
     brew any-tap -r|--repair
       Called with `-r` or `--repair`, any-tap will repair symlinks and prune
       any orphaned symlinks from all current taps.
-    brew any-tap name URL
+    brew any-tap user name URL
       Called this way, any-tap will attempt to clone any repository and tap
       (i.e. symlink) all of the formulae in that repository.
 
@@ -51,9 +51,9 @@ USAGE
 EOF
 
 def raw_install_tap(args)
-  dir, url = args[0..1]
+  user, dir, url = args[0..2]
   # downcase to avoid case-insensitive filesystem problems
-  tapd = validate_name(dir.downcase)
+  tapd = validate_name(user.downcase, dir.downcase)
 
   safe_system('git', 'clone', url, tapd)
   files = []
@@ -62,9 +62,10 @@ def raw_install_tap(args)
   puts "Tapped #{files.count} formula"
 end
 
-def validate_name(name)
+def validate_name(user, name)
+  raise "No slashes in tap users." if user =~ %r{/}
   raise "No slashes in tap names." if name =~ %r{/}
-  tapd = HOMEBREW_LIBRARY/"Taps/#{name}"
+  tapd = HOMEBREW_LIBRARY/"Taps/#{user}/#{name}"
   if tapd.directory?
     raise "Choose another name: a tap #{name} already exists."
   end
@@ -73,9 +74,11 @@ end
 
 if ARGV.size < 1
   tapd = HOMEBREW_LIBRARY/"Taps"
-  tapd.children.each do |tap|
-    puts tap.basename.to_s if (tap/'.git').directory?
-  end if tapd.directory?
+  tapd.children.each do |user|
+    user.children.each do |tap|
+      puts user.basename.to_s + "/" + tap.basename.to_s if (tap/'.git').directory?
+    end if tapd.directory?
+  end
 elsif ['-h', '-?', '--help'].include?(ARGV.first)
   puts usage
 elsif ['-r', '--repair'].include?(ARGV.first)

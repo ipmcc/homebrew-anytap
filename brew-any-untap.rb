@@ -14,7 +14,7 @@ USAGE
     brew any-untap tap-name [tap-name2 tap-name3 ...]
       If you give any-untap the name of a tapped repo, it will attempt to
       untap that repository. You should copy the name exactly as it appears
-      in the output of `brew any-untap`
+      in the output of `brew any-untap` (i.e. <username>/<tapname>)
 
       any-untap can also handle multiple arguments. It will simply try to
       remove each tapped repo, one after the other. If any name in the list
@@ -42,9 +42,11 @@ end
 
 if ARGV.size < 1
   tapd = HOMEBREW_LIBRARY/"Taps"
-  tapd.children.each do |tap|
-    puts tap.basename.to_s if (tap/'.git').directory?
-  end if tapd.directory?
+  tapd.children.each do |user|
+    user.children.each do |tap|
+      puts user.basename.to_s + "/" + tap.basename.to_s if (tap/'.git').directory?
+    end if tapd.directory?
+  end
 elsif ['-h', '-?', '--help'].include?(ARGV.first)
   puts usage
 else
